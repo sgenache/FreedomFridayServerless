@@ -1,2 +1,3 @@
 # FreedomFridayServerless
-Repo for Access Freedom Friday 
+
+Repo for Access Freedom Friday.
