@@ -23,7 +23,7 @@ namespace FreedomFridayServerless.Function
         private static readonly ISchema _schema = new Schema { Query = new StarWarsQuery() }; 
 
         [FunctionName("HttpTriggerCSharp")]
-        public static async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Function,"post", Route = "graphql")]HttpRequest req, ILogger log)
+        public static async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous,"post", Route = "graphql")]HttpRequest req, ILogger log)
         {
             log.LogInformation("C# HTTP trigger function processed a request.");
 
