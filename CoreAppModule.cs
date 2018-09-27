@@ -1,5 +1,6 @@
 using System.IO;
 using System.Net.Http;
+using FreedomFridayServerless.DependencyInjection;
 using GraphQL;
 using GraphQL.Http;
 using GraphQL.Types;
@@ -21,20 +22,7 @@ namespace FreedomFridayServerless.Function
             services.AddSingleton<IDocumentWriter, DocumentWriter>();
             services.AddSingleton<ISchema>(s => new Schema { Query = new StarWarsQuery() });
 
-            //services.AddSingleton<HttpClient>();
+            services.AddTransient<IGraphQLFunction, GraphQLFunction>();
         }
-    }
-
-    public class Module : IModule
-    {
-        public virtual void Load(IServiceCollection services)
-        {
-            return;
-        }
-    }
-
-    public interface IModule
-    {
-        void Load(IServiceCollection services);
     }
 }

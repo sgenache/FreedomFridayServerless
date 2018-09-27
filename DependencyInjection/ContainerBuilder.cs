@@ -1,7 +1,7 @@
 using System;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace FreedomFridayServerless.Function
+namespace FreedomFridayServerless.DependencyInjection
 {
     public class ContainerBuilder : IContainerBuilder
     {

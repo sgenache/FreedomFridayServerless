@@ -1,12 +1,15 @@
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using FreedomFridayServerless.DependencyInjection;
 using GraphQL;
 using GraphQL.Http;
 using GraphQL.Types;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace FreedomFridayServerless.Function
 {
@@ -30,8 +33,11 @@ namespace FreedomFridayServerless.Function
             this.schema = schema;
         }
 
-        public async Task<TOutput> InvokeAsync<TInput, TOutput>(TInput input) where TInput: class
-                                                                              where TOutput: class
+        public ILogger Log { get; set; }
+
+        public async Task<TOutput> InvokeAsync<TInput, TOutput>(TInput input) 
+            where TInput: class
+            where TOutput: class
         {
             var req = input as HttpRequest;
             string name = req.Query["name"];
@@ -62,5 +68,13 @@ namespace FreedomFridayServerless.Function
                 return ser.Deserialize<T>(jsonReader);
             }
         }  
+    }
+
+    
+    public class GraphQLRequest
+    {
+        public string OperationName { get; set; }
+        public string Query { get; set; }
+        public JObject Variables { get; set; }
     }
 }
