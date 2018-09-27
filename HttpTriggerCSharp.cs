@@ -6,6 +6,7 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Azure.WebJobs.Host;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -18,9 +19,9 @@ namespace FreedomFridayServerless.Function
 {
     public static class HttpTriggerCSharp
     {
-        private static readonly IDocumentExecuter _executer = new DocumentExecuter();
-        private static readonly IDocumentWriter _writer = new DocumentWriter();
-        private static readonly ISchema _schema = new Schema { Query = new StarWarsQuery() }; 
+        public static IServiceProvider Container = new ContainerBuilder()
+                                                        .RegisterModule(new CoreAppModule())
+                                                        .Build();
 
         [FunctionName("HttpTriggerCSharp")]
         public static async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous,"post", Route = "graphql")]HttpRequest req, ILogger log)
@@ -31,16 +32,20 @@ namespace FreedomFridayServerless.Function
 
             var request = Deserialize<GraphQLRequest>(req.Body);
 
-            var result = await _executer.ExecuteAsync(_ =>
+            var executer = Container.GetService<IDocumentExecuter>();
+            var writer = Container.GetService<IDocumentWriter>();
+            var schema = Container.GetService<ISchema>();
+
+            var result = await executer.ExecuteAsync(_ =>
             {
-                _.Schema = _schema;
+                _.Schema = schema;
                 _.Query = request.Query;
                 _.OperationName = request.OperationName;
                 _.Inputs = request.Variables.ToInputs();
                 //_.UserContext = _settings.BuildUserContext?.Invoke(context);
             });
 
-            var json = _writer.Write(result);
+            var json = writer.Write(result);
             return result.Errors?.Any() == true 
                 ? new BadRequestObjectResult(json) 
                 : (ActionResult)new OkObjectResult(json);
