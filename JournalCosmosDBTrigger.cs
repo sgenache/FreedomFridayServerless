@@ -1,6 +1,9 @@
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using FreedomFridayServerless.Contracts;
 using Microsoft.Azure.Documents;
+using Microsoft.Azure.EventHubs;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Host;
 using Microsoft.Extensions.Logging;
@@ -16,13 +19,23 @@ namespace FreedomFridayServerless.Function
             collectionName: "journals",
             ConnectionStringSetting = "freedomfridayserverless_DOCUMENTDB",
             LeaseCollectionName = "leases",
-            CreateLeaseCollectionIfNotExists = true)]IReadOnlyList<Document> input, ILogger log)
+            CreateLeaseCollectionIfNotExists = true)]IReadOnlyList<Document> input, 
+            [EventHub("FreedomFriday", 
+            Connection = "EventHubConnectionAppSetting")] ICollector<EventData> outputMessages, 
+            ILogger log)
         {
-            if (input != null && input.Count > 0)
+            log.LogInformation("Documents modified " + input.Count);
+            var events = input
+                .Select(d => JsonConvert.DeserializeObject<JournalDTO>(d.ToString()))
+                .SelectMany(journal => journal
+                    .Lines
+                    .Select(line => line.ToPostedEvent(journal.Id, journal.Date))
+                    .Select(postedEvent => JsonConvert.SerializeObject(postedEvent))
+                    .Select(s => new EventData(Encoding.UTF8.GetBytes(s))));
+            
+            foreach (var @event in events)
             {
-                log.LogInformation("Documents modified " + input.Count);
-                log.LogInformation("First document Id " + input[0].Id);
-                var journalDto = JsonConvert.DeserializeObject<JournalDTO>(input[0].ToString());
+                outputMessages.Add(@event);
             }
         }
     }

@@ -18,5 +18,19 @@ namespace FreedomFridayServerless.Contracts
 		public decimal AmountCredit { get; set; }
 		[DataMember]
 		public string Description { get; set; }
+
+        public JournalPostedEvent ToPostedEvent(string journalId, DateTime date)
+        {
+            return new JournalPostedEvent
+            {
+                EventId = Guid.NewGuid().ToString(),
+                Date = date,
+                JournalId = journalId,
+                AccountId = this.AccountId,
+                AmountCredit = this.AmountCredit,
+                AmountDebit = this.AmountDebit, 
+                Description = this.Description               
+            };
+        }
     }
 }
