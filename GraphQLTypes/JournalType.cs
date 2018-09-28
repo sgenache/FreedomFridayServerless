@@ -22,7 +22,7 @@ namespace FreedomFridayServerless.GraphQLTypes
         public JournalInputType()
         {
             Name = "JournalInput";
-            Field(t => t.Id, type: typeof(NonNullGraphType<IdGraphType>)).Description("The Id of the Journal.");       
+            //Field(t => t.Id, type: typeof(NonNullGraphType<IdGraphType>)).Description("The Id of the Journal.");       
             Field(t => t.Lines, type: typeof(ListGraphType<NonNullGraphType<JournalLineInputType>>)).Description("The Journal Lines.");
             Field(t => t.Date).Description("The Date of the Journal.");
             Field(t => t.Reference, nullable:true).Description("The Journal reference.");

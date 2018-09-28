@@ -6,29 +6,16 @@ namespace FreedomFridayServerless.Contracts
     [DataContract]
     public class JournalLineDTO
     {
-        private JournalLineDTO()
-        {
-            
-        }
-
-        public JournalLineDTO(Guid accountId, string accountCode, decimal amountDebit, decimal amountCredit)
-        {
-            AccountId = accountId;
-            AccountCode = accountCode;
-            AmountDebit = amountDebit;
-            AmountCredit = amountCredit;
-        }
-
         [DataMember]
-		public Guid AccountId { get; private set; }
+		public string AccountId { get; set; }
         [DataMember]
-		public string AccountCode { get; private set; }
+		public string AccountCode { get; set; }
         [DataMember]
         public string AccountName { get; set; }
         [DataMember]
-		public decimal AmountDebit { get; private set; }
+		public decimal AmountDebit { get; set; }
 		[DataMember]
-		public decimal AmountCredit { get; private set; }
+		public decimal AmountCredit { get; set; }
 		[DataMember]
 		public string Description { get; set; }
     }

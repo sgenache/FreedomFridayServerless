@@ -21,20 +21,21 @@ namespace FreedomFridayServerless.GraphQLTypes
                 {
                     var dto = ctx.GetArgument<JournalDTO>("journal");
 
-                    var requestUrl = $"{journalSettings.BaseUrl}{journalSettings.Endpoints.AddJournal}";
+                    var requestUrl = $"http://{journalSettings.BaseUrl}/api/{journalSettings.Endpoints.AddJournal}";
                     var content = new StringContent(JsonConvert.SerializeObject(dto), Encoding.Default, "application/json");
 
                     using (var responseMessage = await httpClient.PostAsync(requestUrl, content))
                     {                
                         if (!responseMessage.IsSuccessStatusCode) 
-                        {
-                            var ex = responseMessage.Content.ReadAsAsync<HttpError>().Exception;
-                            ctx.Errors.Add(new GraphQL.ExecutionError("error", ex));
+                        {           
+                            var errorContent = await responseMessage.Content.ReadAsStringAsync();
+                            if (errorContent != null) ctx.Errors.Add(new GraphQL.ExecutionError(errorContent));
+                            else responseMessage.EnsureSuccessStatusCode();
                             return null;
                         }
 
                         var serializedResponse = await responseMessage.Content.ReadAsStringAsync();
-                        var response = JsonConvert.DeserializeObject<object>(serializedResponse);
+                        var response = JsonConvert.DeserializeObject<JournalDTO>(serializedResponse);
                         return response;
                     }
                 });

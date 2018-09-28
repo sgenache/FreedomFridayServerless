@@ -8,27 +8,10 @@ namespace FreedomFridayServerless.Contracts
     public class JournalDTO
     {
         [DataMember]
-        public Guid Id { get; private set; }
+        public string Id { get; set; }
 
 		[DataMember]
         public List<JournalLineDTO> Lines { get; set; }
-
-        private JournalDTO()
-        {
-            
-        }
-
-        public JournalDTO(Guid id)
-        {
-            Id = id;
-            Lines = new List<JournalLineDTO>();
-        }
-
-        public JournalDTO(Guid id, List<JournalLineDTO> lines)
-        {
-            Id = id;
-            Lines = lines;
-        }
 
         [DataMember]
         public DateTime Date { get; set; }

@@ -8,7 +8,7 @@ namespace FreedomFridayServerless.GraphQLTypes
         public JournalLineType()
         {
             Name = "JournalLine";
-            Field(a => a.AccountId)
+            Field(a => a.AccountId, type: typeof(NonNullGraphType<IdGraphType>))
                 .Description("The Id of the Account.");
             Field(a => a.AccountCode)
                 .Description("The Code of the Account.");
@@ -25,7 +25,7 @@ namespace FreedomFridayServerless.GraphQLTypes
         public JournalLineInputType()
         {
             Name = "JournalLineInput";
-            Field(a => a.AccountId)
+            Field(a => a.AccountId, type: typeof(NonNullGraphType<IdGraphType>))
                 .Description("The Id of the Account.");
             Field(a => a.AccountCode)
                 .Description("The Code of the Account.");

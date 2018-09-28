@@ -7,7 +7,7 @@ namespace FreedomFridayServerless.Contracts
     public class AccountDTO
     {
         [DataMember]
-        public Guid Id { get; set; }
+        public string Id { get; set; }
 
         [DataMember]
         public string Code { get; set; }

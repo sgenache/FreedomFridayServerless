@@ -22,8 +22,11 @@ namespace FreedomFridayServerless.Function
 
             var dto = req.Body.Deserialize<JournalDTO>();
 
-            return new OkObjectResult(dto);
-            //return new BadRequestObjectResult("Invalid journal");
+            dto.Id = Guid.NewGuid().ToString();
+            dto.UpdatedAt = DateTime.UtcNow;
+
+            //return new OkObjectResult(dto);
+            return new BadRequestObjectResult("Invalid journal");
 
             //return name != null
             //    ? (ActionResult)new OkObjectResult($"Hello, {name}")

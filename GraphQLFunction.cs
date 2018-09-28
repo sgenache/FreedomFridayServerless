@@ -51,6 +51,7 @@ namespace FreedomFridayServerless.Function
                 _.Query = request.Query;
                 _.OperationName = request.OperationName;
                 _.Inputs = request.Variables.ToInputs();
+                _.ExposeExceptions = true;
                 //_.UserContext = _settings.BuildUserContext?.Invoke(context);
             });
 
