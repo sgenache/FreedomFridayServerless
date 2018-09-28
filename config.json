@@ -4,5 +4,11 @@
         "Endpoints" : {
             "AddJournal" : "add"
         }
+    },
+    "OrchestratorSettings" : {
+        "FunctionName" : "DurableFunctionsOrchestration_HttpStart",
+        "Endpoints" : {
+            "AddJournal" : "HttpStart"
+        }
     }
 }

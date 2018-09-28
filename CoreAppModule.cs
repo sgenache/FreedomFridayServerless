@@ -22,12 +22,18 @@ namespace FreedomFridayServerless.Function
                 .Build();
 
             var hostName = config.GetSection("WEBSITE_HOSTNAME").Value;
-            var journalSettings = config.Get<Config>().JournalSettings;
-            journalSettings.BaseUrl = hostName.Contains("0.0.0.0") 
+            var baseUrl = hostName.Contains("0.0.0.0") 
                 ? $"http://{hostName.Replace("0.0.0.0", "localhost")}/api"
                 : $"htts://{hostName}/api";
 
+            var journalSettings = config.Get<Config>().JournalSettings;
+            journalSettings.BaseUrl = baseUrl;
+
+            var orchestratorSettings = config.Get<Config>().OrchestratorSettings;
+            orchestratorSettings.BaseUrl = baseUrl;
+
             services.AddSingleton(journalSettings);
+            services.AddSingleton(orchestratorSettings);
             services.AddSingleton<HttpClient>();
 
             services.AddSingleton<GraphQL.IDependencyResolver>(s => new FuncDependencyResolver(s.GetRequiredService));
