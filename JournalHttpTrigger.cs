@@ -18,13 +18,19 @@ namespace FreedomFridayServerless.Function
     public static class JournalHttpTrigger
     {
         [FunctionName("JournalHttpTrigger")]
-        public static Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "add")]HttpRequest req, ILogger log)
+        public static async Task<IActionResult> Run(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "add")]HttpRequest req,
+            [CosmosDB(
+                databaseName: "FreedomFriday",
+                collectionName: "journals",
+                ConnectionStringSetting = "freedomfridayserverless_DOCUMENTDB")]IAsyncCollector<JournalDTO> journalStore, 
+            ILogger log)
         {
             log.LogInformation("JournalHttpTrigger function processed a request.");
 
             var dto = req.Body.Deserialize<JournalDTO>();
 
-            return Task.FromResult(JournalBuilder
+            var result = JournalBuilder
                 .Init()
                 .WithTransactionId(Guid.NewGuid())
                 .WithDate(dto.Date)
@@ -40,8 +46,11 @@ namespace FreedomFridayServerless.Function
                 .WithReference(dto.Reference)
                 .WithDateUpdated(DateTime.UtcNow)
                 .Build()
-                .OnSuccess(journal => Result.Ok(journal.ToJournalDto()))
-                .ToActionResult());
+                .OnSuccess(journal => Result.Ok(journal.ToJournalDto()));
+            if (result.IsFailure) return result.ToActionResult();
+
+            await journalStore.AddAsync(result.Value);
+            return result.ToActionResult();
         }
     }
 }
