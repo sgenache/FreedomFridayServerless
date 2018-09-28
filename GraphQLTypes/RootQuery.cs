@@ -9,7 +9,7 @@ namespace FreedomFridayServerless.GraphQLTypes
             Name = "root";
 
             Field<AccountsQuery>("accounts", resolve: ctx => new { });
-            Field<TransactionsQuery>("transactions", resolve: ctx => new { });
+            Field<JournalsQuery>("transactions", resolve: ctx => new { });
             //Field<ReportsQuery>("reports", resolve: ctx => new { });
         }
     }

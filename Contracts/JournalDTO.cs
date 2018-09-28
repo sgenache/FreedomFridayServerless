@@ -5,26 +5,26 @@ using System.Runtime.Serialization;
 namespace FreedomFridayServerless.Contracts
 {
     [DataContract]
-    public class TransactionDTO
+    public class JournalDTO
     {
         [DataMember]
         public Guid Id { get; private set; }
 
 		[DataMember]
-        public List<TransactionLineDTO> Lines { get; set; }
+        public List<JournalLineDTO> Lines { get; set; }
 
-        private TransactionDTO()
+        private JournalDTO()
         {
             
         }
 
-        public TransactionDTO(Guid id)
+        public JournalDTO(Guid id)
         {
             Id = id;
-            Lines = new List<TransactionLineDTO>();
+            Lines = new List<JournalLineDTO>();
         }
 
-        public TransactionDTO(Guid id, List<TransactionLineDTO> lines)
+        public JournalDTO(Guid id, List<JournalLineDTO> lines)
         {
             Id = id;
             Lines = lines;

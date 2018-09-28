@@ -4,20 +4,23 @@ using System.Runtime.Serialization;
 namespace FreedomFridayServerless.Contracts
 {
     [DataContract]
-    public class TransactionLineDTO
+    public class JournalLineDTO
     {
-        private TransactionLineDTO()
+        private JournalLineDTO()
         {
             
         }
 
-        public TransactionLineDTO(string nominalSourceId, string accountCode, decimal amountDebit, decimal amountCredit)
+        public JournalLineDTO(Guid accountId, string accountCode, decimal amountDebit, decimal amountCredit)
         {
+            AccountId = accountId;
             AccountCode = accountCode;
             AmountDebit = amountDebit;
             AmountCredit = amountCredit;
         }
 
+        [DataMember]
+		public Guid AccountId { get; private set; }
         [DataMember]
 		public string AccountCode { get; private set; }
         [DataMember]

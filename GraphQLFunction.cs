@@ -2,6 +2,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using FreedomFridayServerless.DependencyInjection;
+using FreedomFridayServerless.Extensions;
 using GraphQL;
 using GraphQL.Http;
 using GraphQL.Types;
@@ -42,7 +43,7 @@ namespace FreedomFridayServerless.Function
             var req = input as HttpRequest;
             string name = req.Query["name"];
 
-            var request = Deserialize<GraphQLRequest>(req.Body);
+            var request = req.Body.Deserialize<GraphQLRequest>();
 
             var result = await documentExecuter.ExecuteAsync(_ =>
             {
@@ -58,16 +59,6 @@ namespace FreedomFridayServerless.Function
                 ? new BadRequestObjectResult(json) as TOutput
                 : new OkObjectResult(json) as TOutput;
         }
-
-        private T Deserialize<T>(Stream s)
-        {
-            using (var reader = new StreamReader(s))
-            using (var jsonReader = new JsonTextReader(reader))
-            {
-                var ser = new JsonSerializer();
-                return ser.Deserialize<T>(jsonReader);
-            }
-        }  
     }
 
     

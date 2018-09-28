@@ -2,7 +2,7 @@ using GraphQL.Types;
 
 namespace FreedomFridayServerless.GraphQLTypes
 {
-    public class TransactionsQuery : ObjectGraphType
+    public class JournalsQuery : ObjectGraphType
     {
         
     }

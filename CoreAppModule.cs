@@ -1,5 +1,6 @@
 using System.IO;
 using System.Net.Http;
+using  FreedomFridayServerless.Configuration;
 using FreedomFridayServerless.DependencyInjection;
 using FreedomFridayServerless.GraphQLTypes;
 using GraphQL;
@@ -14,14 +15,33 @@ namespace FreedomFridayServerless.Function
     {
         public override void Load(IServiceCollection services)
         {
-            //var config = new ConfigurationBuilder()
-            //    .SetBasePath(Directory.GetCurrentDirectory())
-            //    .AddJsonFile("config.json")
-            //    .Build();
+            var config = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddEnvironmentVariables()
+                .AddJsonFile("config.json")
+                .Build();
 
+            var hostName = config.GetSection("WEBSITE_HOSTNAME").Value;
+            var journalSettings = config.Get<Config>().JournalSettings;
+            journalSettings.BaseUrl = hostName;
+
+            services.AddSingleton(journalSettings);
+            services.AddSingleton<HttpClient>();
+
+            services.AddSingleton<GraphQL.IDependencyResolver>(s => new FuncDependencyResolver(s.GetRequiredService));
             services.AddSingleton<IDocumentExecuter, DocumentExecuter>();
             services.AddSingleton<IDocumentWriter, DocumentWriter>();
-            services.AddSingleton<ISchema>(s => new Schema { Query = new RootQuery() });
+
+            services.AddSingleton<ISchema, AccountingSchema>();   
+            services.AddSingleton<AccountType>();
+            services.AddSingleton<JournalType>();          
+            services.AddSingleton<JournalLineType>();
+            services.AddSingleton<JournalInputType>();
+            services.AddSingleton<JournalLineInputType>();
+            services.AddSingleton<RootQuery>();           
+            services.AddSingleton<AccountsQuery>();
+            services.AddSingleton<JournalsQuery>();
+            services.AddSingleton<JournalMutation>();
 
             services.AddTransient<IGraphQLFunction, GraphQLFunction>();
         }

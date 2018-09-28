@@ -1,0 +1,8 @@
+{
+    "JournalSettings" : {
+        "FunctionName" : "JournalHttpTrigger",
+        "Endpoints" : {
+            "AddJournal" : "Add"
+        }
+    }
+}
