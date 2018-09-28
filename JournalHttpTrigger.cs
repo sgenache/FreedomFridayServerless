@@ -10,27 +10,38 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using FreedomFridayServerless.Extensions;
 using FreedomFridayServerless.Contracts;
+using FreedomFridayServerless.Domain.Core;
+using System.Linq;
 
 namespace FreedomFridayServerless.Function
 {
     public static class JournalHttpTrigger
     {
         [FunctionName("JournalHttpTrigger")]
-        public static async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "add")]HttpRequest req, ILogger log)
+        public static Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "add")]HttpRequest req, ILogger log)
         {
             log.LogInformation("JournalHttpTrigger function processed a request.");
 
             var dto = req.Body.Deserialize<JournalDTO>();
 
-            dto.Id = Guid.NewGuid().ToString();
-            dto.UpdatedAt = DateTime.UtcNow;
-
-            //return new OkObjectResult(dto);
-            return new BadRequestObjectResult("Invalid journal");
-
-            //return name != null
-            //    ? (ActionResult)new OkObjectResult($"Hello, {name}")
-            //    : new BadRequestObjectResult("Please pass a name on the query string or in the request body");
+            return Task.FromResult(JournalBuilder
+                .Init()
+                .WithTransactionId(Guid.NewGuid())
+                .WithDate(dto.Date)
+                .WithTransactionLines(dto.Lines.Select(l => JournalLineBuilder
+                    .Init()
+                    .WithDebitCreditAmount(l.AmountDebit, l.AmountCredit)
+                    .WithDate(dto.Date)
+                    .WithAccountSourceId(l.AccountId)
+                    .WithAccountCode(l.AccountCode)
+                    .WithAccountName(l.AccountName)
+                    .WithDescription(l.Description)))
+                .WithNumber(dto.Number)
+                .WithReference(dto.Reference)
+                .WithDateUpdated(DateTime.UtcNow)
+                .Build()
+                .OnSuccess(journal => Result.Ok(journal.ToJournalDto()))
+                .ToActionResult());
         }
     }
 }

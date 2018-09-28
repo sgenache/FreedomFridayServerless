@@ -24,8 +24,8 @@ namespace FreedomFridayServerless.Function
             var hostName = config.GetSection("WEBSITE_HOSTNAME").Value;
             var journalSettings = config.Get<Config>().JournalSettings;
             journalSettings.BaseUrl = hostName.Contains("0.0.0.0") 
-                ? hostName.Replace("0.0.0.0", "localhost")
-                : hostName;
+                ? $"http://{hostName.Replace("0.0.0.0", "localhost")}/api"
+                : $"htts://{hostName}/api";
 
             services.AddSingleton(journalSettings);
             services.AddSingleton<HttpClient>();

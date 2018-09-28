@@ -14,5 +14,5 @@ namespace FreedomFridayServerless.Extensions
                 return ser.Deserialize<T>(jsonReader);
             }
         }  
-    }
+    }   
 }
