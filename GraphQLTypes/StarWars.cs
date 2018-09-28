@@ -1,6 +1,6 @@
 using GraphQL.Types;
 
-namespace FreedomFridayServerless.Function
+namespace FreedomFridayServerless.GraphQLTypes
 {
     public class Droid
     {
