@@ -254,7 +254,7 @@ namespace FreedomFridayServerless.Function
         Result<Journal> Build();
     }
 
-     public static class JournalExt
+    public static class JournalExt
     {      
         public static JournalDTO ToJournalDto(this Journal t)
         {

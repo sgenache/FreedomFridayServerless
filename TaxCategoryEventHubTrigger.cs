@@ -6,18 +6,18 @@ using Microsoft.Extensions.Logging;
 
 namespace FreedomFridayServerless.Function
 {
-    public static class AccountEventHubTrigger
+    public static class TaxCategoryEventHubTrigger
     {
-        [FunctionName("AccountEventHubTrigger")]
+        [FunctionName("TaxCategoryEventHubTrigger")]
         public static void Run([EventHubTrigger("FreedomFriday", 
             Connection = "EventHubConnectionAppSetting",
-            ConsumerGroup = "account")]EventData eventMessage, 
+            ConsumerGroup = "taxcategory")]EventData eventMessage, 
             ILogger log)
         {
             var body =  Encoding.UTF8.GetString(eventMessage.Body.Array);
-            log.LogInformation($"AccountEventHubTrigger function processed a message: {body}");
+            log.LogInformation($"TaxCategoryEventHubTrigger function processed a message: {body}");
             
-            // Update Account Balance
+             // Update Tax Category Balance
         }
     }
 }
