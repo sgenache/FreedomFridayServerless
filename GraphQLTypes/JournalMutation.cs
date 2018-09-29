@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using FreedomFridayServerless.Configuration;
 using FreedomFridayServerless.Contracts;
+using FreedomFridayServerless.Domain.Core;
 using GraphQL.Types;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.DurableTask;
@@ -85,7 +86,20 @@ namespace FreedomFridayServerless.GraphQLTypes
                     } while(status.Value<string>("runtimeStatus") == "Pending" || 
                             status.Value<string>("runtimeStatus") == "Running");
 
-                    return status["output"].ToObject<JournalDTO>();
+                    if (status.Value<string>("runtimeStatus") != "Completed")
+                    {
+                        ctx.Errors.Add(new GraphQL.ExecutionError("Saga failed"));
+                        return null;
+                    }
+                    var journalResult = status["output"].ToObject<Result<JournalDTO>>();
+
+                    if (journalResult.IsFailure)
+                    {
+                        ctx.Errors.Add(new GraphQL.ExecutionError(journalResult.ErrorMessage));
+                        return null;
+                    }
+                    return journalResult.Value;
+
                 });
             this.httpClient = httpClient;
         }    

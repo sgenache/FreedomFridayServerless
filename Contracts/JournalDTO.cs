@@ -10,8 +10,19 @@ namespace FreedomFridayServerless.Contracts
         [DataMember]
         public string Id { get; set; }
 
+        private List<JournalLineDTO> _lines;
 		[DataMember]
-        public List<JournalLineDTO> Lines { get; set; }
+        public List<JournalLineDTO> Lines 
+        { 
+            get 
+            {
+                if (_lines == null) _lines = new List<JournalLineDTO>();
+                return _lines;
+            }
+            set{
+                _lines = value;
+            } 
+        }
 
         [DataMember]
         public DateTime Date { get; set; }

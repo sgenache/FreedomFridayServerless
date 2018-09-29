@@ -17,22 +17,23 @@ namespace FreedomFridayServerless.Function
     public static class DurableFunctionsOrchestration
     {
         [FunctionName("DurableFunctionsOrchestration")]
-        public static async Task<JournalDTO> RunOrchestrator(
+        public static async Task<Result<JournalDTO>> RunOrchestrator(
             [OrchestrationTrigger] DurableOrchestrationContext context)
         {
             var dto = context.GetInput<JournalDTO>();
 
-            // Replace "hello" with the name of your Durable Activity Function.
-            await context.CallActivityAsync<string>("DurableFunctionsOrchestration_Hello", dto);
+            var journalResult = await context.CallActivityAsync<Result<JournalDTO>>("DurableFunctionsOrchestration_Journal", dto);
+            if (journalResult.IsFailure) return journalResult;
+
             await context.CallActivityAsync<string>("DurableFunctionsOrchestration_Hello", dto);
             await context.CallActivityAsync<string>("DurableFunctionsOrchestration_Hello", dto);
 
             // returns ["Hello Tokyo!", "Hello Seattle!", "Hello London!"]
-            return dto;
+            return journalResult;
         }
 
         [FunctionName("DurableFunctionsOrchestration_Journal")]
-        public static async Task<Result> Run(
+        public static async Task<Result<JournalDTO>> Run(
             [ActivityTrigger] JournalDTO dto,
             [CosmosDB(
                 databaseName: "FreedomFriday",

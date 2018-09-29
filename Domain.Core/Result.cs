@@ -9,7 +9,12 @@ namespace FreedomFridayServerless.Domain.Core
 {
     [DataContract]
     public class Result
-    {
+    {   
+        protected Result()
+        {
+
+        }
+
         public Result(bool succeded, string message = "")
         {
             IsSuccess = succeded;
@@ -82,7 +87,6 @@ namespace FreedomFridayServerless.Domain.Core
         [DataMember]
         private T _value;
 
-        [IgnoreDataMember]
         public T Value
         {
             get
@@ -91,6 +95,14 @@ namespace FreedomFridayServerless.Domain.Core
                     throw new AggregateException(Exception);
                 return _value;
             }
+            set {
+                _value = value;
+            }
+        }
+
+        private Result() : base ()
+        {
+            
         }
 
         public Result(T value)

@@ -1,6 +1,6 @@
 using System.IO;
 using System.Net.Http;
-using  FreedomFridayServerless.Configuration;
+using FreedomFridayServerless.Configuration;
 using FreedomFridayServerless.DependencyInjection;
 using FreedomFridayServerless.GraphQLTypes;
 using GraphQL;
