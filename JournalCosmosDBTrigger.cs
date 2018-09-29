@@ -5,7 +5,6 @@ using FreedomFridayServerless.Contracts;
 using Microsoft.Azure.Documents;
 using Microsoft.Azure.EventHubs;
 using Microsoft.Azure.WebJobs;
-using Microsoft.Azure.WebJobs.Host;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 

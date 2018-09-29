@@ -11,6 +11,7 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Host;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 
 namespace FreedomFridayServerless.Function
 {
@@ -25,19 +26,37 @@ namespace FreedomFridayServerless.Function
             var journalResult = await context.CallActivityAsync<Result<JournalDTO>>("DurableFunctionsOrchestration_Journal", dto);
             if (journalResult.IsFailure) return journalResult;
 
-            await context.CallActivityAsync<string>("DurableFunctionsOrchestration_Hello", dto);
-            await context.CallActivityAsync<string>("DurableFunctionsOrchestration_Hello", dto);
+            var events = journalResult.Value
+                .Lines
+                .Select(line => line.ToPostedEvent(journalResult.Value.Id, journalResult.Value.Date));
+           
+            var tasks = new List<Task>();
 
-            // returns ["Hello Tokyo!", "Hello Seattle!", "Hello London!"]
+            foreach(var @event in events)
+            {
+                tasks.Add(context.CallActivityAsync("DurableFunctionsOrchestration_Account", @event));
+                tasks.Add(context.CallActivityAsync("DurableFunctionsOrchestration_TaxCategory", @event));
+            }
+
+            try 
+            {
+                await Task.WhenAll(tasks);
+            }
+            catch(Exception)
+            {
+                //compensating transactions 
+                throw;
+            }
+
             return journalResult;
         }
 
         [FunctionName("DurableFunctionsOrchestration_Journal")]
-        public static async Task<Result<JournalDTO>> Run(
+        public static async Task<Result<JournalDTO>> AddJournal(
             [ActivityTrigger] JournalDTO dto,
             [CosmosDB(
                 databaseName: "FreedomFriday",
-                collectionName: "journals",
+                collectionName: "journalsSaga",
                 ConnectionStringSetting = "freedomfridayserverless_DOCUMENTDB")]IAsyncCollector<JournalDTO> journalStore, 
             ILogger log)
         {
@@ -61,16 +80,29 @@ namespace FreedomFridayServerless.Function
                 .Build()
                 .OnSuccess(journal => Result.Ok(journal.ToJournalDto()));
             if (result.IsFailure) return result;
-
+            
             await journalStore.AddAsync(result.Value);
             return result;
         }
 
-        [FunctionName("DurableFunctionsOrchestration_Hello")]
-        public static string SayHello([ActivityTrigger] JournalDTO dto, ILogger log)
+        [FunctionName("DurableFunctionsOrchestration_Account")]
+        public static void UpdateAccount([ActivityTrigger] JournalPostedEvent @event, 
+            ILogger log)
+        {   
+            var body = JsonConvert.SerializeObject(@event);
+            log.LogInformation($"DurableFunctionsOrchestration_Account function processed a message: {body}");
+
+            // Update Account Balance
+        }
+
+        [FunctionName("DurableFunctionsOrchestration_TaxCategory")]
+        public static void UpdateTaxCategory([ActivityTrigger] JournalPostedEvent @event,
+            ILogger log)
         {
-            log.LogInformation($"Saying hello to {dto.Id}.");
-            return $"Hello {dto.Id}!";
+            var body = JsonConvert.SerializeObject(@event);
+            log.LogInformation($"DurableFunctionsOrchestration_TaxCategory function processed a message: {body}");
+            
+             // Update Tax Category Balance
         }
 
         [FunctionName("DurableFunctionsOrchestration_HttpStart")]
