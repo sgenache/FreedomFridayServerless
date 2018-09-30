@@ -9,7 +9,7 @@ namespace FreedomFridayServerless.Function
     public static class TaxCategoryEventHubTrigger
     {
         [FunctionName("TaxCategoryEventHubTrigger")]
-        public static void Run([EventHubTrigger("FreedomFriday", 
+        public static void Run([EventHubTrigger("freedomfridaylocal", 
             Connection = "EventHubConnectionAppSetting",
             ConsumerGroup = "taxcategory")]EventData eventMessage, 
             ILogger log)

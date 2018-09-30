@@ -26,7 +26,7 @@ namespace FreedomFridayServerless.Function
             var hostName = config.GetSection("WEBSITE_HOSTNAME").Value;
             var baseUrl = hostName.Contains("0.0.0.0") 
                 ? $"http://{hostName.Replace("0.0.0.0", "localhost")}/api"
-                : $"htts://{hostName}/api";
+                : $"https://{hostName}/api";
 
             services.AddSingleton(new OrchestratorSettings 
             {

@@ -9,7 +9,7 @@ namespace FreedomFridayServerless.Function
     public static class AccountEventHubTrigger
     {
         [FunctionName("AccountEventHubTrigger")]
-        public static void Run([EventHubTrigger("FreedomFriday", 
+        public static void Run([EventHubTrigger("freedomfridaylocal", 
             Connection = "EventHubConnectionAppSetting",
             ConsumerGroup = "account")]EventData eventMessage, 
             ILogger log)

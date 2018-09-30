@@ -19,7 +19,7 @@ namespace FreedomFridayServerless.Function
             ConnectionStringSetting = "freedomfridayserverless_DOCUMENTDB",
             LeaseCollectionName = "leases",
             CreateLeaseCollectionIfNotExists = true)]IReadOnlyList<Document> input, 
-            [EventHub("FreedomFriday", 
+            [EventHub("freedomfridaylocal", 
             Connection = "EventHubConnectionAppSetting")] ICollector<EventData> outputMessages, 
             ILogger log)
         {
