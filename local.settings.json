@@ -3,6 +3,8 @@
   "Values": {
     "AzureWebJobsStorage": "UseDevelopmentStorage=true",
     "freedomfridayserverless_DOCUMENTDB": "AccountEndpoint=https://freedomfridayserverless.documents.azure.com:443/;AccountKey=aeyapTGjmXVYc0yvBoCfMFIWEIxe0X14QDso5Ks1yQu0qyYhXIk95VnXQhgO4RHQg8yqorBrxpENDjSC36tO1A==;",
-    "EventHubConnectionAppSetting" : "Endpoint=sb://freedomfridayserverless.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=sEs3srexuEvBCHlv7MBO84EQAl+qRDI/2CPoWzaiE7s="
+    "EventHubConnectionAppSetting" : "Endpoint=sb://freedomfridayserverless.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=sEs3srexuEvBCHlv7MBO84EQAl+qRDI/2CPoWzaiE7s=",
+    "JournalSettings.AddEndpoint" : "add",
+    "OrchestratorSettings.FunctionName" : "DurableFunctionsOrchestration_HttpStart"
   }
 }

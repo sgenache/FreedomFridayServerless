@@ -19,8 +19,8 @@ namespace FreedomFridayServerless.Function
         {
             var config = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddEnvironmentVariables()
-                .AddJsonFile("config.json")
+                .AddEnvironmentVariables() 
+                .AddJsonFile("local.settings.json", optional:true, reloadOnChange:true)
                 .Build();
 
             var hostName = config.GetSection("WEBSITE_HOSTNAME").Value;
@@ -28,14 +28,16 @@ namespace FreedomFridayServerless.Function
                 ? $"http://{hostName.Replace("0.0.0.0", "localhost")}/api"
                 : $"htts://{hostName}/api";
 
-            var journalSettings = config.Get<Config>().JournalSettings;
-            journalSettings.BaseUrl = baseUrl;
-
-            var orchestratorSettings = config.Get<Config>().OrchestratorSettings;
-            orchestratorSettings.BaseUrl = baseUrl;
-
-            services.AddSingleton(journalSettings);
-            services.AddSingleton(orchestratorSettings);
+            services.AddSingleton(new OrchestratorSettings 
+            {
+                BaseUrl = baseUrl,
+                FunctionName = config.GetSection("OrchestratorSettings.FunctionName").Value
+            });
+            services.AddSingleton(new JournalSettings
+            {
+                BaseUrl = baseUrl,
+                Endpoints = new Endpoints { AddJournal = config.GetSection("JournalSettings.AddEndpoint").Value }
+            });
             services.AddSingleton<HttpClient>();
 
             services.AddSingleton<GraphQL.IDependencyResolver>(s => new FuncDependencyResolver(s.GetRequiredService));
