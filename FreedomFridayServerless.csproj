@@ -10,6 +10,7 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.1.1"/>
     <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.CosmosDB" Version="3.0.1"/>
     <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.EventHubs" Version="3.0.0"/>
+    <PackageReference Include="GraphQL.Relay" Version="0.5.0"/>
   </ItemGroup>
   <ItemGroup>
     <None Update="host.json">

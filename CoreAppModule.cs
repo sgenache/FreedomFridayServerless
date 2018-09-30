@@ -6,6 +6,8 @@ using FreedomFridayServerless.GraphQLTypes;
 using GraphQL;
 using GraphQL.Http;
 using GraphQL.Types;
+using GraphQL.Types.Relay;
+using GraphQL.Types.Relay.DataObjects;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -39,6 +41,11 @@ namespace FreedomFridayServerless.Function
             services.AddSingleton<GraphQL.IDependencyResolver>(s => new FuncDependencyResolver(s.GetRequiredService));
             services.AddSingleton<IDocumentExecuter, DocumentExecuter>();
             services.AddSingleton<IDocumentWriter, DocumentWriter>();
+            services.AddTransient(typeof(ConnectionType<>));
+            services.AddTransient(typeof(EdgeType<>));
+            services.AddTransient(typeof(Edge<>));
+            services.AddTransient<PageInfo>();
+            services.AddTransient<PageInfoType>();
 
             services.AddSingleton<ISchema, AccountingSchema>();   
             services.AddSingleton<AccountType>();
@@ -46,9 +53,12 @@ namespace FreedomFridayServerless.Function
             services.AddSingleton<JournalLineType>();
             services.AddSingleton<JournalInputType>();
             services.AddSingleton<JournalLineInputType>();
+            services.AddSingleton<TrialBalanceType>();
+            services.AddSingleton<TrialBalanceLineType>();
             services.AddSingleton<RootQuery>();           
             services.AddSingleton<AccountsQuery>();
             services.AddSingleton<JournalsQuery>();
+            services.AddSingleton<ReportsQuery>();
             services.AddSingleton<JournalMutation>();
 
             services.AddTransient<IGraphQLFunction, GraphQLFunction>();
