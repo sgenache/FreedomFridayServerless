@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -5,6 +6,7 @@ using FreedomFridayServerless.DependencyInjection;
 using FreedomFridayServerless.Extensions;
 using GraphQL;
 using GraphQL.Http;
+using GraphQL.Instrumentation;
 using GraphQL.Types;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -40,11 +42,12 @@ namespace FreedomFridayServerless.Function
             where TInput: class
             where TOutput: class
         {
+            var start = DateTime.UtcNow;
+
             var req = input as HttpRequest;
-            string name = req.Query["name"];
 
             var request = req.Body.Deserialize<GraphQLRequest>();
-
+        
             var result = await documentExecuter.ExecuteAsync(_ =>
             {
                 _.Schema = schema;
@@ -52,8 +55,10 @@ namespace FreedomFridayServerless.Function
                 _.OperationName = request.OperationName;
                 _.Inputs = request.Variables.ToInputs();
                 _.ExposeExceptions = true;
+                _.FieldMiddleware.Use<InstrumentFieldsMiddleware>();
                 //_.UserContext = _settings.BuildUserContext?.Invoke(context);
             });
+            result.EnrichWithApolloTracing(start);
 
             var json = documentWriter.Write(result);
             return result.Errors?.Any() == true 
@@ -62,7 +67,6 @@ namespace FreedomFridayServerless.Function
         }
     }
 
-    
     public class GraphQLRequest
     {
         public string OperationName { get; set; }
