@@ -56,7 +56,7 @@ namespace FreedomFridayServerless.Function
             [ActivityTrigger] JournalDTO dto,
             [CosmosDB(
                 databaseName: "FreedomFriday",
-                collectionName: "journalsSaga",
+                collectionName: "journals",
                 ConnectionStringSetting = "freedomfridayserverless_DOCUMENTDB")]IAsyncCollector<JournalDTO> journalStore, 
             ILogger log)
         {
